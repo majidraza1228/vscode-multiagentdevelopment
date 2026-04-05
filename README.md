@@ -44,6 +44,41 @@ For this repo, the ownership model is:
 
 That is safer than a single generic coder editing everything at once.
 
+## Parent/Subagent Flow
+
+```text
+Developer Request
+       |
+       v
+Orchestrator Agent
+       |
+       v
+Planner Agent
+       |
+       v
+Execution Phases
+       |
+       +-------------------+-------------------+-------------------+
+       |                   |                   |                   |
+       v                   v                   v                   v
+Model Coder         Service Coder         API Coder          Test Coder
+src/models/**       src/services/**       src/routes/**      src/__tests__/**
+                                          src/controllers/**
+                                          src/index.ts
+       \                   |                   |                  /
+        \                  |                   |                 /
+         \                 |                   |                /
+          +---------------------------------------------------+
+                              |
+                              v
+                        Reviewer Agent
+                              |
+                              v
+                        Final Validated Result
+```
+
+The important design rule is that each subagent should own a narrow file boundary. The orchestrator should only run subagents in parallel when their write scopes do not overlap.
+
 ## Repository Layout
 
 ```text
