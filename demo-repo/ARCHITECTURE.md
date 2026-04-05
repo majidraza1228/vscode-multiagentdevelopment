@@ -36,3 +36,14 @@ When assigning tasks to Copilot agents, scope them to:
 - Validation logic → `services/todoService.ts` + tests
 
 Do **not** ask agents to restructure the entire project in one task — break it into focused PRs.
+
+## Relation To The Agent Prompts
+
+The root `.github/agents/` folder should map directly to these application boundaries:
+
+- `model-coder.agent.md` -> `src/models/`
+- `service-coder.agent.md` -> `src/services/`
+- `api-coder.agent.md` -> `src/routes/`, `src/controllers/`, and app wiring
+- `test-coder.agent.md` -> `src/__tests__/`
+
+That mapping is the key multi-agent idea in this repo: subagents should be aligned to code ownership boundaries, not just generic roles.

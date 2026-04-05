@@ -11,7 +11,7 @@ Repo: this project (`multiagent-demo`)
 2. Have two VS Code windows ready side-by-side — one for the "main" workspace, one to show a background worktree
 3. Make sure GitHub Copilot is signed in and Agent Mode is enabled
 4. Pre-open the model picker so the audience can see Claude / GPT / Gemini options
-5. Have the GitHub repo open in a browser tab (for the Actions demo)
+5. Be ready to show the root `.github/agents/` folder and `demo-repo/src/` side by side
 
 ---
 
@@ -48,7 +48,21 @@ Repo: this project (`multiagent-demo`)
 
 ---
 
-## Demo 3 — Background Agent (Slide 6 / 7)
+## Demo 3 — Parent Agent And Subagents
+
+**Narration:** "This repo is not just using one agent. It is showing how to structure parent and subagent responsibilities."
+
+1. Open `.github/agents/orchestrator.agent.md`
+2. Explain: this is the parent agent that plans phases and delegates by file ownership
+3. Open `.github/agents/planner.agent.md`
+4. Explain: this agent turns a request into steps, dependencies, and file assignments
+5. Open `model-coder.agent.md`, `service-coder.agent.md`, and `test-coder.agent.md`
+6. Explain: these are narrow subagents with hard ownership boundaries
+7. Key line: *"The important pattern is not more agents. The important pattern is clearer ownership."*
+
+---
+
+## Demo 4 — Background Agent (Slide 6 / 7)
 
 **Narration:** "Now I want to show tasks running in parallel while I keep working."
 
@@ -68,7 +82,7 @@ Repo: this project (`multiagent-demo`)
 
 ---
 
-## Demo 4 — MCP: Agent Sees & Fixes Its Own Output (Slide 10)
+## Demo 5 — MCP: Agent Sees & Fixes Its Own Output (Slide 10)
 
 **Narration:** "The last piece — giving the agent tools to validate its own work."
 
@@ -83,34 +97,9 @@ Repo: this project (`multiagent-demo`)
 
 ---
 
-## Demo 5 — GitHub Actions Trigger (Slide 14)
-
-**Narration:** "Finally — triggering an agent from a GitHub event. No VS Code open required."
-
-1. Go to the GitHub repo in your browser
-2. Create a new issue with this body:
-   ```
-   ## Task
-   Add a DELETE /todos/:id endpoint.
-
-   ## Files in scope
-   src/routes/todos.ts, src/controllers/todoController.ts, src/__tests__/
-
-   ## Acceptance criteria
-   - Returns 204 on success
-   - Returns 404 for unknown id
-   - Test coverage for both cases
-   ```
-3. Add the `agent-task` label
-4. Show the Actions tab — the workflow fires
-5. Say: *"A developer filed an issue. No one touched VS Code. A draft PR will appear."*
-6. (If time allows) show the draft PR that was opened
-
----
-
 ## Wrap-Up Line
 
-*"What you just saw — parallel agents, shared instructions, MCP tool loops, GitHub-triggered PRs — this is not a demo project. This is a pattern you can set up in your real repo this afternoon. The files are all in here."*
+*"What you just saw — shared instructions, parent and subagent boundaries, background work, and MCP tool loops — this is a pattern you can set up in your real repo this afternoon. The files are all in here."*
 
 Point to the repo.
 
@@ -123,4 +112,4 @@ Point to the repo.
 | Agent Mode not available | Check Copilot version — needs latest VS Code Insiders or stable ≥1.96 |
 | Background tasks not showing | Enable in Settings → Copilot → Background Agents |
 | MCP servers not loading | Reload VS Code window after editing mcp.json |
-| GitHub Actions not firing | Check that the workflow YAML uses the correct label name exactly |
+| Agents editing too much at once | Narrow the task spec and list files in scope explicitly |

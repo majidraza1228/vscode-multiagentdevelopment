@@ -1,168 +1,187 @@
 # VS Code Multi-Agent Development
 
-A demo repository for the **"Multi-Agent Development in VS Code"** talk — showing how to build a massively parallel, GitHub-native AI workflow using GitHub Copilot, git worktrees, MCP servers, and GitHub Actions.
+This repository is a teaching repo for developers who want to understand how to structure a codebase for agent and subagent workflows in VS Code.
 
-> **Talk resources:** [Presentation slides](./DEMO_SCRIPT.md) · [Live demo script](./DEMO_SCRIPT.md)
+It has two jobs:
+- show the application code that agents work on
+- show the instruction files that control how agents should behave
 
----
+The important idea is simple: this repo does not treat "multi-agent" as magic. It treats it as disciplined task decomposition, file ownership, and shared instructions.
 
-## What This Repo Demonstrates
+## How To Read This Repo
 
-| Pattern | File | What it shows |
-|---|---|---|
-| Agent instructions | `.github/copilot-instructions.md` | The single file that makes every Copilot agent follow your project's rules |
-| PR conventions | `.github/PULL_REQUEST_TEMPLATE.md` | Enforces consistent PR descriptions automatically |
-| GitHub Actions trigger | `.github/workflows/copilot-agent.yml` | Label an issue `agent-task` → Copilot raises a draft PR autonomously |
-| MCP servers | `.vscode/mcp.json` | Playwright, GitHub, and Fetch tools wired up for agents |
-| Demo codebase | `src/` | A TypeScript Todo API for agents to work on live |
-| Architecture guide | `ARCHITECTURE.md` | Scope boundaries so agents edit the right files |
-| Demo walkthrough | `DEMO_SCRIPT.md` | Step-by-step script with exact prompts to use on stage |
+Read the repository in this order:
 
----
+1. [README.md](./README.md)
+   This file explains the full repo and how the pieces fit together.
+2. [.github/copilot-instructions.md](./.github/copilot-instructions.md)
+   This is the shared contract for all agents.
+3. [.github/agents/README.md](./.github/agents/README.md)
+   This explains the parent agent and the specialized subagents.
+4. [demo-repo/ARCHITECTURE.md](./demo-repo/ARCHITECTURE.md)
+   This explains the application boundaries inside the sample Todo API.
+5. [demo-repo/DEMO_SCRIPT.md](./demo-repo/DEMO_SCRIPT.md)
+   This shows how to demo or teach the pattern live.
 
-## Getting Started
+After that, read the code under `demo-repo/src/`.
 
-### Prerequisites
+## What Multi-Agent Means In This Repo
 
-- [VS Code](https://code.visualstudio.com/) with [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension
-- Node.js 20+
-- A GitHub account with Copilot access
+In this repository, a multi-agent system means:
+- one parent agent decides how to break work down
+- subagents own narrow file scopes
+- shared instructions keep all agents aligned
+- validation happens before the work is considered complete
 
-### Setup
+The goal is not to have many agents. The goal is to have the minimum number of agents with clear ownership.
+
+For this repo, the ownership model is:
+- model changes -> model subagent
+- business logic changes -> service subagent
+- route/controller changes -> API subagent
+- test changes -> test subagent
+- integration review -> reviewer subagent
+
+That is safer than a single generic coder editing everything at once.
+
+## Repository Layout
+
+```text
+.
+├── .github/
+│   ├── copilot-instructions.md
+│   └── agents/
+│       ├── README.md
+│       ├── orchestrator.agent.md
+│       ├── planner.agent.md
+│       ├── model-coder.agent.md
+│       ├── service-coder.agent.md
+│       ├── api-coder.agent.md
+│       ├── test-coder.agent.md
+│       ├── reviewer.agent.md
+│       └── coder.agent.md
+├── demo-repo/
+│   ├── .vscode/
+│   │   └── mcp.json
+│   ├── ARCHITECTURE.md
+│   ├── DEMO_SCRIPT.md
+│   ├── package.json
+│   └── src/
+│       ├── models/
+│       ├── services/
+│       └── __tests__/
+└── README.md
+```
+
+## What Each Markdown File Does
+
+### Root docs
+
+- [README.md](./README.md)
+  The top-level guide. It explains the repo structure, the multi-agent pattern, and the reading order for new developers.
+
+- [.github/copilot-instructions.md](./.github/copilot-instructions.md)
+  The global rules file for all agents. It defines project layout, commands, architecture boundaries, coding conventions, testing expectations, and scope limits.
+
+- [.github/agents/README.md](./.github/agents/README.md)
+  The guide to the agent prompt files. It explains what each specialized agent is responsible for and when it should be used.
+
+### Agent prompt files
+
+- [.github/agents/orchestrator.agent.md](./.github/agents/orchestrator.agent.md)
+  The parent agent. It plans, phases work, delegates to subagents, prevents file conflicts, and ensures review happens.
+
+- [.github/agents/planner.agent.md](./.github/agents/planner.agent.md)
+  The planning agent. It reads the repo, identifies affected files, and turns a request into an execution plan.
+
+- [.github/agents/model-coder.agent.md](./.github/agents/model-coder.agent.md)
+  Owns `demo-repo/src/models/**`.
+
+- [.github/agents/service-coder.agent.md](./.github/agents/service-coder.agent.md)
+  Owns `demo-repo/src/services/**`.
+
+- [.github/agents/api-coder.agent.md](./.github/agents/api-coder.agent.md)
+  Owns `demo-repo/src/routes/**`, `demo-repo/src/controllers/**`, and `demo-repo/src/index.ts`.
+
+- [.github/agents/test-coder.agent.md](./.github/agents/test-coder.agent.md)
+  Owns `demo-repo/src/__tests__/**`.
+
+- [.github/agents/reviewer.agent.md](./.github/agents/reviewer.agent.md)
+  Reviews the final result for correctness, scope drift, missing validation, and integration risk.
+
+- [.github/agents/coder.agent.md](./.github/agents/coder.agent.md)
+  A fallback implementation agent. Use it only when the task does not fit a narrower ownership-based subagent.
+
+### App docs
+
+- [demo-repo/ARCHITECTURE.md](./demo-repo/ARCHITECTURE.md)
+  The application architecture. It explains the Router -> Controller -> Service -> Store flow and tells agents where business logic belongs.
+
+- [demo-repo/DEMO_SCRIPT.md](./demo-repo/DEMO_SCRIPT.md)
+  A guided walkthrough for teaching or demoing the repo in VS Code.
+
+## Why The Root `.github` Exists
+
+The root `.github/` folder is the instruction layer for the whole repository.
+
+It should stay at the root because:
+- this is the actual Git repository root
+- the agent prompts apply to the whole repo
+- `demo-repo/` is the sample application inside the repo, not a separate repository
+
+There should not be a separate `demo-repo/.github/` unless `demo-repo/` becomes its own standalone Git repository later.
+
+## How A Developer Should Use This Repo
+
+If you are new to multi-agent development, use this mental model:
+
+1. The application code lives in `demo-repo/src/`.
+2. The rules for all agents live in `.github/copilot-instructions.md`.
+3. The behavior of each agent role lives in `.github/agents/*.agent.md`.
+4. The parent agent should split work by file ownership, not by vague skill labels.
+5. Small, scoped tasks are the default.
+
+Example:
+
+If the request is "add a dueDate field to todos":
+- planner identifies affected files
+- model coder updates the model types
+- service coder updates business logic
+- test coder updates tests
+- reviewer checks that the change is complete and validated
+
+That is the core multi-agent pattern this repo is designed to teach.
+
+## Developer Workflow
+
+From `demo-repo/`:
 
 ```bash
-git clone https://github.com/majidraza1228/vscode-multiagentdevelopment.git
-cd vscode-multiagentdevelopment
 npm install
-```
-
-### Run the tests
-
-```bash
 npm test
-```
-
-### Run linting
-
-```bash
 npm run lint
 ```
 
----
+When assigning work to an agent:
+- give a narrow task
+- list files in scope
+- avoid asking one agent to restructure the project
+- require tests when behavior changes
 
-## Key Concepts
+## Current Scope Of This Repo
 
-### 1. The `copilot-instructions.md` File
+This repository currently focuses on:
+- local and background agent workflows in VS Code
+- shared agent instructions
+- parent/subagent decomposition
+- MCP-based tooling for agent workflows
 
-The most important file in this repo. Located at `.github/copilot-instructions.md`, it gives every Copilot agent a shared briefing before it touches your code — covering stack, style rules, testing conventions, scope limits, and PR format.
+It does not currently include an active GitHub Actions automation workflow in the checked-in root `.github/` folder. If you want cloud-triggered agents, that can be added later as a separate documented layer.
 
-**Without it:** agents guess your conventions.
-**With it:** every agent, every developer, follows the same rules automatically.
+## Summary
 
-### 2. Agent Mode vs Chat Mode
+This repo is easiest to understand if you treat it as two connected systems:
+- `demo-repo/` is the code agents change
+- `.github/` is the control plane that tells agents how to work
 
-| | Chat Mode | Agent Mode | Agent + MCP |
-|---|---|---|---|
-| **What it does** | Answers questions | Edits files, runs commands | Full autonomous loop |
-| **Best for** | Explaining code | Implementing features | Zero-touch workflows |
-| **Activates** | Default | Mode selector in Copilot panel | `.vscode/mcp.json` configured |
-
-### 3. Git Worktree Isolation
-
-Background agents spin up in isolated git worktrees — they can't break your open workspace. If an agent produces bad output, you simply discard the worktree. Main branch is always stable.
-
-### 4. MCP Servers
-
-The `.vscode/mcp.json` file wires up three Model Context Protocol servers:
-
-- **Playwright MCP** — browser control + screenshots for visual validation
-- **GitHub MCP** — read issues, create branches, raise PRs
-- **Fetch MCP** — read documentation and web pages
-
-This gives agents the ability to run, see, and fix their own output — turning code generation into a self-correcting loop.
-
-### 5. GitHub Actions as a Cloud Agent
-
-Add the `agent-task` label to any GitHub issue and the workflow in `.github/workflows/copilot-agent.yml` fires — Copilot picks up the issue body as its spec, implements the change in an isolated worktree, and opens a draft PR for human review. No VS Code required.
-
----
-
-## Project Structure
-
-```
-.
-├── .github/
-│   ├── copilot-instructions.md      # Agent briefing file — start here
-│   ├── PULL_REQUEST_TEMPLATE.md     # Enforces PR conventions
-│   └── workflows/
-│       └── copilot-agent.yml        # GitHub Actions agent trigger
-├── .vscode/
-│   └── mcp.json                     # MCP server configuration
-├── src/
-│   ├── models/
-│   │   └── todo.ts                  # TypeScript interfaces
-│   ├── services/
-│   │   └── todoService.ts           # Business logic (agents edit here)
-│   └── __tests__/
-│       └── todoService.test.ts      # Vitest test suite
-├── ARCHITECTURE.md                  # Scope guide for agents
-├── DEMO_SCRIPT.md                   # Live demo walkthrough
-└── package.json
-```
-
----
-
-## Live Demo Tasks
-
-These are the exact tasks shown in the live demo. You can run them yourself in Agent Mode:
-
-**Task 1 — Add a field:**
-```
-Add an optional dueDate field (ISO date string) to the Todo interface.
-Update the service and tests. Follow copilot-instructions.md conventions.
-```
-
-**Task 2 — Add a filter endpoint:**
-```
-Add a GET /todos?completed=true filter to the todos route.
-Scope: src/routes/, src/controllers/, src/__tests__/
-Return a draft PR.
-```
-
-**Task 3 — Add priority:**
-```
-Add a priority field (high | medium | low, default medium) to the Todo model.
-Update createTodo to accept priority. Add tests for all three values.
-```
-
----
-
-## Model Selection Guide
-
-GitHub Copilot in VS Code gives you access to multiple models via the model picker. A rough guide for this repo:
-
-| Task | Recommended Model |
-|---|---|
-| Quick questions, explaining code | GPT-4.1 / Gemini Flash |
-| Feature implementation, test writing | Claude Sonnet 4.6 |
-| Architecture decisions, complex refactoring | Claude Opus 4.6 / o3 |
-
----
-
-## Talk: Multi-Agent Development in VS Code
-
-This repo accompanies the developer community talk covering:
-
-- Why single-threaded AI assistance no longer scales
-- The three execution environments: Local, Background, Cloud
-- Git worktree isolation for parallel agents
-- Context cleansing with sub-agents
-- MCP servers for iterative autonomy
-- GitHub Actions as fire-and-forget cloud agents
-- Scaling multi-agent workflows across a team
-
----
-
-## License
-
-MIT
+That separation is the main lesson for developers adopting multi-agent workflows in a real project.
