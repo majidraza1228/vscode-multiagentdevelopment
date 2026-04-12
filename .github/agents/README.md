@@ -55,6 +55,17 @@ These prompt files solve that by making responsibilities explicit.
 - [coder.agent.md](./coder.agent.md)
   Fallback implementation agent for work that does not fit the specialized ownership model cleanly.
 
+## Demo Agents
+
+- [demo-orchestrator.agent.md](./demo-orchestrator.agent.md)
+  Lightweight parent agent for live collaboration demos.
+
+- [demo-planner.agent.md](./demo-planner.agent.md)
+  Short, presentation-focused planner for demo runs.
+
+- [demo-flow.md](./demo-flow.md)
+  Quick script for showing end-to-end subagent coordination.
+
 ## Design Principles
 
 This repo uses a strict approach:
