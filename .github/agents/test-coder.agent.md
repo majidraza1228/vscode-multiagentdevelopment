@@ -22,7 +22,7 @@ Do not edit production files unless the orchestrator explicitly expands your sco
 ## Rules
 
 - follow `.github/copilot-instructions.md`
-- use `_resetStore()` patterns where applicable
+- use `resetTodoStore()` patterns where applicable
 - if production code changes are required for the test to make sense, report that dependency instead of editing outside scope
 
 ## Required Response

@@ -83,15 +83,10 @@ Every delegation prompt must include:
 - required tests or checks
 - the required response format
 
-Required response format for subagents:
+Before delegating to a subagent, confirm its target files exist in the current branch. If they do not exist, either add a scaffold phase first or delegate to Coder with explicit scaffolding scope.
 
-```md
-Summary:
-Files changed:
-Tests run:
-Assumptions:
-Blockers:
-```
+Required response format for subagents:
+Use the canonical format in `.github/copilot-instructions.md` (`## Agent Response Format`).
 
 ### Step 4: Verify Integration
 

@@ -102,9 +102,12 @@ The important design rule is that each subagent should own a narrow file boundar
 │   ├── DEMO_SCRIPT.md
 │   ├── package.json
 │   └── src/
+│       ├── routes/
+│       ├── controllers/
 │       ├── models/
 │       ├── services/
-│       └── __tests__/
+│       ├── __tests__/
+│       └── index.ts
 └── README.md
 ```
 

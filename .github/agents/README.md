@@ -38,16 +38,16 @@ These prompt files solve that by making responsibilities explicit.
   Planning subagent. It studies the repo and converts a request into steps, file assignments, dependencies, and validation needs.
 
 - [model-coder.agent.md](./model-coder.agent.md)
-  Owns `demo-repo/src/models/**`.
+  Owns model-layer files. See canonical ownership map in `demo-repo/ARCHITECTURE.md`.
 
 - [service-coder.agent.md](./service-coder.agent.md)
-  Owns `demo-repo/src/services/**`.
+  Owns service-layer files. See canonical ownership map in `demo-repo/ARCHITECTURE.md`.
 
 - [api-coder.agent.md](./api-coder.agent.md)
-  Owns `demo-repo/src/routes/**`, `demo-repo/src/controllers/**`, and `demo-repo/src/index.ts`.
+  Owns API-layer files. See canonical ownership map in `demo-repo/ARCHITECTURE.md`.
 
 - [test-coder.agent.md](./test-coder.agent.md)
-  Owns `demo-repo/src/__tests__/**`.
+  Owns test files. See canonical ownership map in `demo-repo/ARCHITECTURE.md`.
 
 - [reviewer.agent.md](./reviewer.agent.md)
   Checks final completeness, validation status, and scope drift.

@@ -38,19 +38,9 @@ npx vitest run src/__tests__/todoService.test.ts -t "creates a todo"
 
 Coverage threshold is **80% lines** — `npm test` will fail below this.
 
-## Architecture (`demo-repo/src/`)
+## Architecture
 
-```
-Request → Router → Controller → Service → Store
-```
-
-- **`models/`** — TypeScript interfaces only, no logic
-- **`services/`** — All business logic; the primary target for agent edits
-- **`controllers/`** — Parse requests, call services, format responses (thin layer)
-- **`routes/`** — Express router definitions, no logic
-- **`__tests__/`** — Vitest tests mirroring `src/` structure
-
-The current store is an in-memory `Map` in `todoService.ts`. To swap in a real database, only `todoService.ts` needs to change — no other files should be affected.
+Use `demo-repo/ARCHITECTURE.md` as the canonical source for layer boundaries, ownership, and task scoping.
 
 ## Code Conventions
 
@@ -66,7 +56,7 @@ The current store is an in-memory `Map` in `todoService.ts`. To swap in a real d
 - Test file naming: `<module>.test.ts`
 - Group related tests with `describe` blocks
 - Mock all external dependencies — never hit real I/O in unit tests
-- Use `_resetStore()` in `beforeEach` to reset in-memory state between tests
+- Use `resetTodoStore()` in `beforeEach` to reset in-memory state between tests
 
 ## PR Conventions
 
@@ -85,10 +75,7 @@ PR body must include: what changed, why, and how to test it.
 - Scope changes to files mentioned in the task spec
 - Prefer ownership-based delegation using the prompts in `.github/agents/`
 
-**Typical task scopes:**
-- New model field → `models/todo.ts` + `services/todoService.ts` + tests
-- New endpoint → `routes/` + `controllers/` + tests
-- Validation logic → `services/todoService.ts` + tests
+Typical task scopes are documented in `demo-repo/ARCHITECTURE.md`.
 
 ## Agent Structure
 
@@ -110,6 +97,24 @@ This repo uses a parent/subagent pattern:
 | Quick questions, explaining code | GPT-4.1 / Gemini Flash |
 | Feature implementation, test writing | Claude Sonnet 4.6 |
 | Architecture decisions, complex refactoring | Claude Opus 4.6 / o3 |
+
+## Agent Response Format
+
+All coding subagents should use this response format:
+
+```md
+Summary:
+Files changed:
+Tests run:
+Assumptions:
+Blockers:
+```
+
+## Chronicle and Session-History Guidance
+
+- Before relying on `/chronicle`, ensure experimental features are enabled (`/experimental on` in interactive sessions, or start CLI with `--experimental`).
+- When querying session history, scope to this repository/workspace first; if no rows are returned, retry with reasonable cwd/repository variants, then explicitly report that history is insufficient.
+- Do not infer or fabricate "recurring" issues from sparse history. Treat a pattern as recurring only if it appears in at least two separate sessions.
 
 ## MCP Servers (`.vscode/mcp.json`)
 

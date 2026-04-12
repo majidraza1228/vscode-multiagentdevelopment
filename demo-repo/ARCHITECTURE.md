@@ -5,7 +5,7 @@
 - **Runtime**: Node.js 20
 - **HTTP**: Express 4
 - **Tests**: Vitest
-- **Linting**: ESLint + Prettier
+- **Linting**: ESLint
 
 ## Layers
 
@@ -30,10 +30,17 @@ Request → Router → Controller → Service → (Store/DB)
 
 ## Agent Task Scope
 
-When assigning tasks to Copilot agents, scope them to:
-- Adding fields to the `Todo` interface → update `models/todo.ts` + `services/todoService.ts` + tests
-- New endpoints → add to `routes/` + `controllers/` + tests
-- Validation logic → `services/todoService.ts` + tests
+Canonical ownership map:
+- Model Coder → `src/models/**`
+- Service Coder → `src/services/**`
+- API Coder → `src/routes/**`, `src/controllers/**`, `src/index.ts`
+- Test Coder → `src/__tests__/**`
+
+Responsibility matrix:
+- Type/interface shapes and DTO fields → Model Coder
+- Input validation and business rules → Service Coder
+- HTTP request/response mapping and status codes → API Coder
+- Behavior verification and coverage → Test Coder
 
 Do **not** ask agents to restructure the entire project in one task — break it into focused PRs.
 

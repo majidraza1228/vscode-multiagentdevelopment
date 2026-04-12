@@ -5,12 +5,12 @@ import {
   createTodo,
   updateTodo,
   deleteTodo,
-  _resetStore,
+  resetTodoStore,
 } from '../services/todoService'
 
 describe('todoService', () => {
   beforeEach(() => {
-    _resetStore()
+    resetTodoStore()
   })
 
   describe('createTodo', () => {
@@ -19,6 +19,7 @@ describe('todoService', () => {
       expect(todo.title).toBe('Buy milk')
       expect(todo.completed).toBe(false)
       expect(todo.id).toBeDefined()
+      expect(todo.createdAt).toBeInstanceOf(Date)
     })
 
     it('trims whitespace from the title', () => {
@@ -63,6 +64,21 @@ describe('todoService', () => {
       const todo = createTodo({ title: 'Do the thing' })
       const updated = updateTodo(todo.id, { completed: true })
       expect(updated?.completed).toBe(true)
+      expect(updated?.title).toBe('Do the thing')
+      expect(updated?.createdAt).toBe(todo.createdAt)
+    })
+
+    it('updates and trims title', () => {
+      const todo = createTodo({ title: 'Original' })
+      const updated = updateTodo(todo.id, { title: '  Updated title  ' })
+      expect(updated?.title).toBe('Updated title')
+      expect(updated?.completed).toBe(false)
+      expect(updated?.createdAt).toBe(todo.createdAt)
+    })
+
+    it('throws if updated title is empty', () => {
+      const todo = createTodo({ title: 'Do the thing' })
+      expect(() => updateTodo(todo.id, { title: '   ' })).toThrow('Title is required')
     })
 
     it('returns undefined for unknown id', () => {

@@ -26,6 +26,11 @@ You are the final integration reviewer for this repository.
 
 ```md
 Summary:
+Files changed:
+Tests run:
+Assumptions:
+Blockers:
+
 Findings:
 - ...
 

@@ -2,7 +2,7 @@
 name: Planner
 description: Creates repo-aware implementation plans with file ownership, dependencies, and validation steps.
 model: Claude Opus 4.6 (copilot)
-tools: ['vscode', 'execute', 'read', 'agent', 'context7/*', 'edit', 'search', 'web', 'memory', 'todo']
+tools: ['vscode', 'execute', 'read', 'agent', 'context7/*', 'search', 'web', 'memory', 'todo']
 ---
 
 # Planning Agent
@@ -37,14 +37,7 @@ When a request is about the application, scope planning to `demo-repo/` unless t
 
 ## Ownership Map
 
-Use this ownership map when assigning work:
-
-- Model Coder -> `demo-repo/src/models/**`
-- Service Coder -> `demo-repo/src/services/**`
-- API Coder -> `demo-repo/src/routes/**`, `demo-repo/src/controllers/**`, `demo-repo/src/index.ts`
-- Test Coder -> `demo-repo/src/__tests__/**`
-- Reviewer -> integration and validation review
-- Generic Coder -> fallback only
+Use the canonical ownership map in `demo-repo/ARCHITECTURE.md`.
 
 ## Required Output
 
